@@ -1,90 +1,93 @@
-var Attacklab=Attacklab||{};
-Attacklab.showdown=Attacklab.showdown||{};
-Attacklab.showdown.converter=function(){
-this.obfuscation;
-var _1;
-var _2;
-var _3;
-var _4=0;
-this.makeHtml=function(_5){
-_1=new Array();
-_2=new Array();
-_3=new Array();
-_5=_5.replace(/~/g,"~T");
-_5=_5.replace(/\$/g,"~D");
-_5=_5.replace(/\r\n/g,"\n");
-_5=_5.replace(/\r/g,"\n");
-_5="\n\n"+_5+"\n\n";
-_5=_6(_5);
-_5=_5.replace(/^[ \t]+$/mg,"");
-_5=_7(_5);
-_5=_8(_5);
-_5=_9(_5);
-_5=_a(_5);
-_5=_5.replace(/~D/g,"$$");
-_5=_5.replace(/~T/g,"~");
-return _5;
-};
-var _8=function(_b){
-var _b=_b.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|\Z)/gm,function(_c,m1,m2,m3,m4){
-m1=m1.toLowerCase();
-_1[m1]=_11(m2);
-if(m3){
-return m3+m4;
-}else{
-if(m4){
-_2[m1]=m4.replace(/"/g,"&quot;");
-}
-}
-return "";
-});
-return _b;
-};
-var _7=function(_12){
-_12=_12.replace(/\n/g,"\n\n");
-var _13="p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del";
-var _14="p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math";
-_12=_12.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm,_15);
-_12=_12.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\/\2>[ \t]*(?=\n+)\n)/gm,_15);
-_12=_12.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,_15);
-_12=_12.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g,_15);
-_12=_12.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,_15);
-_12=_12.replace(/\n\n/g,"\n");
-return _12;
-};
-var _15=function(_16,m1){
-var _18=m1;
-_18=_18.replace(/\n\n/g,"\n");
-_18=_18.replace(/^\n/,"");
-_18=_18.replace(/\n+$/g,"");
-_18="\n\n~K"+(_3.push(_18)-1)+"K\n\n";
-return _18;
-};
-var _9=function(_19){
-_19=_1a(_19);
-var key=_1c("<hr />");
-_19=_19.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm,key);
-_19=_19.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm,key);
-_19=_19.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm,key);
-_19=_1d(_19);
-_19=_1e(_19);
-_19=_1f(_19);
-_19=_7(_19);
-_19=_20(_19);
-return _19;
-};
-var _21=function(_22){
-_22=_23(_22);
-_22=_24(_22);
-_22=_25(_22);
-_22=_26(_22);
-_22=_27(_22);
-_22=_28(_22);
-_22=_11(_22);
-_22=_29(_22);
-_22=_22.replace(/  +\n/g," <br />\n");
-return _22;
-};
+var Attacklab = Attacklab || {};
+Attacklab.showdown = Attacklab.showdown || {};
+Attacklab.showdown.converter = function () {
+    var links;
+    var titles;
+    var slots;
+    var _4=0;
+
+    this.makeHtml = function (str) {
+        links = new Array();
+        titles = new Array();
+        slots = new Array();
+        str = str.replace(/~/g, "~T");
+        str = str.replace(/\$/g, "~D");
+        str = str.replace(/\r\n/g, "\n");
+        str = str.replace(/\r/g, "\n");
+        str = "\n\n" + str + "\n\n";
+        str = _6(str);
+        str = str.replace(/^[ \t]+$/mg, "");
+        str = processTags(str);
+        str = processLinkRefs(str);
+        str = processBlock(str);
+        str = _a(str);
+        str = str.replace(/~D/g, "$$");
+        str = str.replace(/~T/g, "~");
+        return str;
+    };
+
+    var processLinkRefs = function (str) {
+        str = str.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|\Z)/gm, function(_, m1, m2, m3, m4){
+            m1 = m1.toLowerCase();
+            links[m1] = _11(m2);
+            if (m3) {
+                return m3 + m4;
+            } else {
+                if (m4) {
+                    titles[m1] = m4.replace(/"/g,"&quot;");
+                }
+            }
+            return "";
+        });
+        return str;
+    };
+
+    var processTags = function (str) {
+        str = str.replace(/\n/g, "\n\n");
+        str = str.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm, storeMatch);
+        str = str.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math)\b[^\r]*?.*<\/\2>[ \t]*(?=\n+)\n)/gm, storeMatch);
+        str = str.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g, storeMatch);
+        str = str.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g, storeMatch);
+        str = str.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g, storeMatch);
+        str = str.replace(/\n\n/g, "\n");
+        return str;
+    };
+
+    var storeMatch = function (_, m1) {
+        var result = m1;
+        result = result.replace(/\n\n/g, "\n");
+        result = result.replace(/^\n/, "");
+        result = result.replace(/\n+$/g,"");
+        result = "\n\n~K" + (slots.push(result) - 1) + "K\n\n";
+        return result;
+    };
+
+    var processBlock = function (str) {
+        str = processHeadings(str);
+        var key = store("<hr />");
+        str = str.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
+        str = str.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
+        str = str.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, key);
+        str = _1d(_19);
+        str = _1e(_19);
+        str = _1f(_19);
+        str = processTags(_19);
+        str = _20(_19);
+        return str;
+    };
+
+    var _21 = function (str) {
+        str = _23(str);
+        str = _24(str);
+        str = _25(str);
+        str = _26(str);
+        str = _27(str);
+        str = _28(str);
+        str = _11(str);
+        str = _29(str);
+        str = str.replace(/  +\n/g," <br />\n");
+        return str;
+    };
 var _24=function(_2a){
 var _2b=/(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
 _2a=_2a.replace(_2b,function(_2c){
@@ -252,10 +255,12 @@ return _1c(_77)+_78;
 _73=_73.replace(/~0/,"");
 return _73;
 };
-var _1c=function(_7a){
-_7a=_7a.replace(/(^\n+|\n+$)/g,"");
-return "\n\n~K"+(_3.push(_7a)-1)+"K\n\n";
-};
+
+    var _1c = function (str) {
+        str = str.replace(/(^\n+|\n+$)/g, "");
+        return "\n\n~K" + (slots.push(str) - 1) + "K\n\n";
+    };
+
 var _23=function(_7b){
 _7b=_7b.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,function(_7c,m1,m2,m3,m4){
 var c=m3;

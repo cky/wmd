@@ -1,494 +1,516 @@
-var Attacklab=Attacklab||{};
-Attacklab.wmdBase=function(){
-var _1=top;
-var _2=_1["Attacklab"];
-var _3=_1["document"];
-var _4=_1["RegExp"];
-var _5=_1["navigator"];
-_2.Util={};
-_2.Position={};
-_2.Command={};
-var _6=_2.Util;
-var _7=_2.Position;
-var _8=_2.Command;
-_2.Util.IE=(_5.userAgent.indexOf("MSIE")!=-1);
-_2.Util.oldIE=(_5.userAgent.indexOf("MSIE 6.")!=-1||_5.userAgent.indexOf("MSIE 5.")!=-1);
-_2.Util.newIE=!_2.Util.oldIE&&(_5.userAgent.indexOf("MSIE")!=-1);
-_6.makeElement=function(_9,_a){
-var _b=_3.createElement(_9);
-if(!_a){
-var _c=_b.style;
-_c.margin="0";
-_c.padding="0";
-_c.clear="none";
-_c.cssFloat="none";
-_c.textAlign="left";
-_c.position="relative";
-_c.lineHeight="1em";
-_c.border="none";
-_c.color="black";
-_c.backgroundRepeat="no-repeat";
-_c.backgroundImage="none";
-_c.minWidth=_c.minHeight="0";
-_c.maxWidth=_c.maxHeight="90000px";
-}
-return _b;
-};
-_6.getStyle=function(_d,_e){
-var _f=function(_10){
-return _10.replace(/-(\S)/g,function(_11,_12){
-return _12.toUpperCase();
-});
-};
-if(_d.currentStyle){
-_e=_f(_e);
-return _d.currentStyle[_e];
-}else{
-if(_1.getComputedStyle){
-return _3.defaultView.getComputedStyle(_d,null).getPropertyValue(_e);
-}
-}
-return "";
-};
-_6.getElementsByClass=function(_13,_14,_15){
-var _16=[];
-if(_14==null){
-_14=_3;
-}
-if(_15==null){
-_15="*";
-}
-var _17=_14.getElementsByTagName(_15);
-var _18=_17.length;
-var _19=new _4("(^|\\s)"+_13+"(\\s|$)");
-for(var i=0,j=0;i<_18;i++){
-if(_19.test(_17[i].className.toLowerCase())){
-_16[j]=_17[i];
-j++;
-}
-}
-return _16;
-};
-_6.addEvent=function(_1c,_1d,_1e){
-if(_1c.attachEvent){
-_1c.attachEvent("on"+_1d,_1e);
-}else{
-_1c.addEventListener(_1d,_1e,false);
-}
-};
-_6.removeEvent=function(_1f,_20,_21){
-if(_1f.detachEvent){
-_1f.detachEvent("on"+_20,_21);
-}else{
-_1f.removeEventListener(_20,_21,false);
-}
-};
-_6.regexToString=function(_22){
-var _23={};
-var _24=_22.toString();
-_23.expression=_24.replace(/\/([gim]*)$/,"");
-_23.flags=_4.$1;
-_23.expression=_23.expression.replace(/(^\/|\/$)/g,"");
-return _23;
-};
-_6.stringToRegex=function(_25){
-return new _4(_25.expression,_25.flags);
-};
-_6.elementOk=function(_26){
-if(!_26||!_26.parentNode){
-return false;
-}
-if(_6.getStyle(_26,"display")=="none"){
-return false;
-}
-return true;
-};
-_6.skin=function(_27,_28,_29,_2a){
-var _2b;
-var _2c=(_5.userAgent.indexOf("MSIE")!=-1);
-if(_2c){
-_6.fillers=[];
-}
-var _2d=_29/2;
-for(var _2e=0;_2e<4;_2e++){
-var _2f=_6.makeElement("div");
-_2b=_2f.style;
-_2b.overflow="hidden";
-_2b.padding="0";
-_2b.margin="0";
-_2b.lineHeight="0px";
-_2b.height=_2d+"px";
-_2b.width="50%";
-_2b.maxHeight=_2d+"px";
-_2b.position="absolute";
-if(_2e&1){
-_2b.top="0";
-}else{
-_2b.bottom=-_29+"px";
-}
-_2b.zIndex="-1000";
-if(_2e&2){
-_2b.left="0";
-}else{
-_2b.marginLeft="50%";
-}
-if(_2c){
-var _30=_6.makeElement("span");
-_2b=_30.style;
-_2b.height="100%";
-_2b.width=_2a;
-_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg.png')";
-_2b.position="absolute";
-if(_2e&1){
-_2b.top="0";
-}else{
-_2b.bottom="0";
-}
-if(_2e&2){
-_2b.left="0";
-}else{
-_2b.right="0";
-}
-_2f.appendChild(_30);
-}else{
-_2b.backgroundImage="url("+_28+")";
-_2b.backgroundPosition=(_2e&2?"left":"right")+" "+(_2e&1?"top":"bottom");
-}
-_27.appendChild(_2f);
-}
-var _31=function(_32){
-var _33=_6.makeElement("div");
-if(_6.fillers){
-_6.fillers.push(_33);
-}
-_2b=_33.style;
-_2b.overflow="hidden";
-_2b.padding="0";
-_2b.margin="0";
-_2b.marginTop=_2d+"px";
-_2b.lineHeight="0px";
-_2b.height="100%";
-_2b.width="50%";
-_2b.position="absolute";
-_2b.zIndex="-1000";
-if(_2c){
-var _34=_6.makeElement("span");
-_2b=_34.style;
-_2b.height="100%";
-_2b.width=_2a;
-_2b.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_2.basePath+"images/bg-fill.png',sizingMethod='scale')";
-_2b.position="absolute";
-_33.appendChild(_34);
-if(_32){
-_2b.left="0";
-}
-if(!_32){
-_2b.right="0";
-}
-}
-if(!_2c){
-_2b.backgroundImage="url("+_2.basePath+"images/bg-fill.png)";
-_2b.backgroundRepeat="repeat-y";
-if(_32){
-_2b.backgroundPosition="left top";
-}
-if(!_32){
-_2b.backgroundPosition="right top";
-}
-}
-if(!_32){
-_33.style.marginLeft="50%";
-}
-return _33;
-};
-_27.appendChild(_31(true));
-_27.appendChild(_31(false));
-};
-_6.setImage=function(_35,_36,_37,_38){
-_36=_2.basePath+_36;
-if(_5.userAgent.indexOf("MSIE")!=-1){
-var _39=_35.firstChild;
-var _3a=_39.style;
-_3a.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_36+"')";
-}else{
-_35.src=_36;
-}
-return _35;
-};
-_6.createImage=function(_3b,_3c,_3d){
-_3b=_2.basePath+_3b;
-if(_5.userAgent.indexOf("MSIE")!=-1){
-var _3e=_6.makeElement("span");
-var _3f=_3e.style;
-_3f.display="inline-block";
-_3f.height="1px";
-_3f.width="1px";
-_3e.unselectable="on";
-var _40=_6.makeElement("span");
-_3f=_40.style;
-_3f.display="inline-block";
-_3f.height="1px";
-_3f.width="1px";
-_3f.filter="progid:DXImageTransform.Microsoft."+"AlphaImageLoader(src='"+_3b+"')";
-_40.unselectable="on";
-_3e.appendChild(_40);
-}else{
-var _3e=_6.makeElement("img");
-_3e.style.display="inline";
-_3e.src=_3b;
-}
-_3e.style.border="none";
-_3e.border="0";
-if(_3c&&_3d){
-_3e.style.width=_3c+"px";
-_3e.style.height=_3d+"px";
-}
-return _3e;
-};
-_6.prompt=function(_41,_42,_43){
-var _44;
-var _45,_46,_47;
-var _48=function(_49){
-var _4a=(_49.charCode||_49.keyCode);
-if(_4a==27){
-_4b(true);
-}
-};
-var _4b=function(_4c){
-_6.removeEvent(_3.body,"keydown",_48);
-var _4d=_47.value;
-if(_4c){
-_4d=null;
-}
-_45.parentNode.removeChild(_45);
-_46.parentNode.removeChild(_46);
-_43(_4d);
-return false;
-};
-if(_42==undefined){
-_42="";
-}
-var _4e=function(){
-_46=_6.makeElement("div");
-_44=_46.style;
-_3.body.appendChild(_46);
-_44.position="absolute";
-_44.top="0";
-_44.left="0";
-_44.backgroundColor="#000";
-_44.zIndex="1000";
-var _4f=/konqueror/.test(_5.userAgent.toLowerCase());
-if(_4f){
-_44.backgroundColor="transparent";
-}else{
-_44.opacity="0.5";
-_44.filter="alpha(opacity=50)";
-}
-var _50=_7.getPageSize();
-_44.width="100%";
-_44.height=_50[1]+"px";
-};
-var _51=function(){
-_45=_3.createElement("div");
-_45.style.border="3px solid #333";
-_45.style.backgroundColor="#ccc";
-_45.style.padding="10px;";
-_45.style.borderTop="3px solid white";
-_45.style.borderLeft="3px solid white";
-_45.style.position="fixed";
-_45.style.width="400px";
-_45.style.zIndex="1001";
-var _52=_6.makeElement("div");
-_44=_52.style;
-_44.fontSize="14px";
-_44.fontFamily="Helvetica, Arial, Verdana, sans-serif";
-_44.padding="5px";
-_52.innerHTML=_41;
-_45.appendChild(_52);
-var _53=_6.makeElement("form");
-_53.onsubmit=function(){
-return _4b();
-};
-_44=_53.style;
-_44.padding="0";
-_44.margin="0";
-_44.cssFloat="left";
-_44.width="100%";
-_44.textAlign="center";
-_44.position="relative";
-_45.appendChild(_53);
-_47=_3.createElement("input");
-_47.value=_42;
-_44=_47.style;
-_44.display="block";
-_44.width="80%";
-_44.marginLeft=_44.marginRight="auto";
-_44.backgroundColor="white";
-_44.color="black";
-_53.appendChild(_47);
-var _54=_3.createElement("input");
-_54.type="button";
-_54.onclick=function(){
-return _4b();
-};
-_54.value="OK";
-_44=_54.style;
-_44.margin="10px";
-_44.display="inline";
-_44.width="7em";
-var _55=_3.createElement("input");
-_55.type="button";
-_55.onclick=function(){
-return _4b(true);
-};
-_55.value="Cancel";
-_44=_55.style;
-_44.margin="10px";
-_44.display="inline";
-_44.width="7em";
-if(/mac/.test(_5.platform.toLowerCase())){
-_53.appendChild(_55);
-_53.appendChild(_54);
-}else{
-_53.appendChild(_54);
-_53.appendChild(_55);
-}
-_6.addEvent(_3.body,"keydown",_48);
-_45.style.top="50%";
-_45.style.left="50%";
-_45.style.display="block";
-if(_2.Util.oldIE){
-var _56=_7.getPageSize();
-_45.style.position="absolute";
-_45.style.top=_3.documentElement.scrollTop+200+"px";
-_45.style.left="50%";
-}
-_3.body.appendChild(_45);
-_45.style.marginTop=-(_7.getHeight(_45)/2)+"px";
-_45.style.marginLeft=-(_7.getWidth(_45)/2)+"px";
-};
-_4e();
-_1.setTimeout(function(){
-_51();
-var _57=_42.length;
-if(_47.selectionStart!=undefined){
-_47.selectionStart=0;
-_47.selectionEnd=_57;
-}else{
-if(_47.createTextRange){
-var _58=_47.createTextRange();
-_58.collapse(false);
-_58.moveStart("character",-_57);
-_58.moveEnd("character",_57);
-_58.select();
-}
-}
-_47.focus();
-},0);
-};
-_6.objectsEqual=function(_59,_5a){
-for(var _5b in _59){
-if(_59[_5b]!=_5a[_5b]){
-return false;
-}
-}
-for(_5b in _5a){
-if(_59[_5b]!=_5a[_5b]){
-return false;
-}
-}
-return true;
-};
-_6.cloneObject=function(_5c){
-var _5d={};
-for(var _5e in _5c){
-_5d[_5e]=_5c[_5e];
-}
-return _5d;
-};
-_6.escapeUnderscores=function(_5f){
-_5f=_5f.replace(/(\S)(_+)(\S)/g,function(_60,_61,_62,_63){
-_62=_62.replace(/_/g,"&#95;");
-return _61+_62+_63;
-});
-return _5f;
-};
-_7.getPageSize=function(){
-var _64,_65;
-var _66,_67;
-if(_1.innerHeight&&_1.scrollMaxY){
-_64=_3.body.scrollWidth;
-_65=_1.innerHeight+_1.scrollMaxY;
-}else{
-if(_3.body.scrollHeight>_3.body.offsetHeight){
-_64=_3.body.scrollWidth;
-_65=_3.body.scrollHeight;
-}else{
-_64=_3.body.offsetWidth;
-_65=_3.body.offsetHeight;
-}
-}
-var _68,_69;
-if(self.innerHeight){
-_68=self.innerWidth;
-_69=self.innerHeight;
-}else{
-if(_3.documentElement&&_3.documentElement.clientHeight){
-_68=_3.documentElement.clientWidth;
-_69=_3.documentElement.clientHeight;
-}else{
-if(_3.body){
-_68=_3.body.clientWidth;
-_69=_3.body.clientHeight;
-}
-}
-}
-if(_65<_69){
-_67=_69;
-}else{
-_67=_65;
-}
-if(_64<_68){
-_66=_68;
-}else{
-_66=_64;
-}
-var _6a=[_66,_67,_68,_69];
-return _6a;
-};
-_7.getPixelVal=function(_6b){
-if(_6b&&/^(-?\d+(\.\d*)?)px$/.test(_6b)){
-return _4.$1;
-}
-return undefined;
-};
-_7.getTop=function(_6c,_6d){
-var _6e=_6c.offsetTop;
-if(!_6d){
-while(_6c=_6c.offsetParent){
-_6e+=_6c.offsetTop;
-}
-}
-return _6e;
-};
-_7.setTop=function(_6f,_70,_71){
-var _72=_7.getPixelVal(_6f.style.top);
-if(_72==undefined){
-_6f.style.top=_70+"px";
-_72=_70;
-}
-var _73=_7.getTop(_6f,_71)-_72;
-_6f.style.top=(_70-_73)+"px";
-};
-_7.getLeft=function(_74,_75){
-var _76=_74.offsetLeft;
-if(!_75){
-while(_74=_74.offsetParent){
-_76+=_74.offsetLeft;
-}
-}
-return _76;
-};
+var Attacklab = Attacklab || {};
+Attacklab.wmdBase = function () {
+    var self = top;
+    var wmd = self["Attacklab"];
+    var doc = self["document"];
+    var RE = self["RegExp"];
+    var nav = self["navigator"];
+    wmd.Util = {};
+    wmd.Position = {};
+    wmd.Command = {};
+    var util = wmd.Util;
+    var position = wmd.Position;
+    var command = wmd.Command;
+    wmd.Util.IE = (nav.userAgent.indexOf("MSIE") != -1);
+    wmd.Util.oldIE = (nav.userAgent.indexOf("MSIE 6.") != -1 || nav.userAgent.indexOf("MSIE 5.") != -1);
+    wmd.Util.newIE = !wmd.Util.oldIE && wmd.Util.IE;
+
+    util.makeElement = function (type, noStyle) {
+        var elem = doc.createElement(type);
+        if (!noStyle) {
+            var style = elem.style;
+            style.margin = "0";
+            style.padding = "0";
+            style.clear = "none";
+            style.cssFloat = "none";
+            style.textAlign = "left";
+            style.position = "relative";
+            style.lineHeight = "1em";
+            style.border = "none";
+            style.color = "black";
+            style.backgroundRepeat = "no-repeat";
+            style.backgroundImage = "none";
+            style.minWidth = style.minHeight = "0";
+            style.maxWidth = style.maxHeight = "90000px";
+        }
+        return elem;
+    };
+
+    util.getStyle = function (el, prop) {
+        var upcaseDash = function (str) {
+            return str.replace(/-(\S)/g, function (_, m1) {
+                return m1.toUpperCase();
+            });
+        };
+
+        if (el.currentStyle) {
+            prop = upcaseDash(prop);
+            return el.currentStyle[prop];
+        } else if (self.getComputedStyle) {
+            return doc.defaultView.getComputedStyle(el, null).getPropertyValue(prop);
+        }
+        return "";
+    };
+
+    util.getElementsByClass = function (cls, context, tag) {
+        var result = [];
+        if (context == null) {
+            context = doc;
+        }
+        if (tag == null) {
+            tag = "*";
+        }
+
+        var els = context.getElementsByTagName(tag);
+        var nels = els.length;
+        var re = new RE("(^|\\s)" + cls + "(\\s|$)");
+        for (var i = 0, j = 0; i < nels; i++) {
+            if (re.test(els[i].className.toLowerCase())) {
+                result[j] = els[i];
+                j++;
+            }
+        }
+        return result;
+    };
+
+    util.addEvent = function (el, event, listener) {
+        if (el.attachEvent) {
+            el.attachEvent("on" + event, listener);
+        } else {
+            el.addEventListener(event, listener, false);
+        }
+    };
+
+    util.removeEvent = function (el, event, listener) {
+        if (el.detachEvent) {
+            el.detachEvent("on" + event, listener);
+        } else {
+            el.removeEventListener(event, listener, false);
+        }
+    };
+
+    util.regexToString = function (re) {
+        var result = {};
+        var str = re.toString();
+        result.expression = str.replace(/\/([gim]*)$/, "");
+        result.flags = RE.$1;
+        result.expression = result.expression.replace(/(^\/|\/$)/g, "");
+        return result;
+    };
+
+    util.stringToRegex = function (str) {
+        return new RE(str.expression, str.flags);
+    };
+
+    util.elementOk = function (el) {
+        if (!el || !el.parentNode) {
+            return false;
+        }
+        if (util.getStyle(el, "display") == "none") {
+            return false;
+        }
+        return true;
+    };
+
+    util.skin = function (el, bgimg, height, width) {
+        var style;
+        var msie = (nav.userAgent.indexOf("MSIE") != -1);
+        if (msie) {
+            util.fillers = [];
+        }
+
+        var halfh = height / 2;
+        for (var corner = 0; corner < 4; corner++) {
+            var div = util.makeElement("div");
+            style = div.style;
+            style.overflow = "hidden";
+            style.padding = "0";
+            style.margin = "0";
+            style.lineHeight = "0px";
+            style.height = halfh + "px";
+            style.width = "50%";
+            style.maxHeight = halfh + "px";
+            style.position = "absolute";
+            if (corner & 1) {
+                style.top = "0";
+            } else {
+                style.bottom = -height + "px";
+            }
+            left.zIndex = "-1000";
+            if (corner & 2) {
+                style.left = "0";
+            } else {
+                style.marginLeft = "50%";
+            }
+            if (msie) {
+                var span = util.makeElement("span");
+                style = span.style;
+                style.height = "100%";
+                style.width = width;
+                style.filter = "progid:DXImageTransform.Microsoft." +
+                    "AlphaImageLoader(src='" + wmd.basePath + "images/bg.png')";
+                style.position = "absolute";
+                if (corner & 1) {
+                    style.top = "0";
+                } else {
+                    style.bottom = "0";
+                }
+                if (corner & 2) {
+                    style.left = "0";
+                } else {
+                    style.right = "0";
+                }
+                div.appendChild(span);
+            } else {
+                style.backgroundImage = "url(" + bgimg + ")";
+                style.backgroundPosition= (corner & 2 ? "left" : "right") +
+                    " " + (corner & 1 ? "top" : "bottom");
+            }
+            el.appendChild(div);
+        }
+
+        var fill = function (left) {
+            var div = util.makeElement("div");
+            if (util.fillers) {
+                util.fillers.push(div);
+            }
+            style = div.style;
+            style.overflow = "hidden";
+            style.padding = "0";
+            style.margin = "0";
+            style.marginTop = halfh + "px";
+            style.lineHeight = "0px";
+            style.height = "100%";
+            style.width = "50%";
+            style.position = "absolute";
+            style.zIndex = "-1000";
+            if (msie) {
+                var span = util.makeElement("span");
+                style = span.style;
+                style.height = "100%";
+                style.width = width;
+                style.filter = "progid:DXImageTransform.Microsoft." +
+                    "AlphaImageLoader(src='" + wmd.basePath +
+                    "images/bg-fill.png',sizingMethod='scale')";
+                style.position = "absolute";
+                div.appendChild(span);
+                if (left) {
+                    style.left = "0";
+                } else {
+                    style.right = "0";
+                }
+            } else {
+                style.backgroundImage = "url(" + wmd.basePath + "images/bg-fill.png)";
+                style.backgroundRepeat = "repeat-y";
+                if (left) {
+                    style.backgroundPosition = "left top";
+                } else {
+                    style.backgroundPosition = "right top";
+                }
+            }
+            if (!left) {
+                div.style.marginLeft = "50%";
+            }
+            return div;
+        };
+        el.appendChild(fill(true));
+        el.appendChild(fill(false));
+    };
+
+    util.setImage = function (el, img) {
+        img = wmd.basePath + img;
+        if (nav.userAgent.indexOf("MSIE") != -1) {
+            var child = el.firstChild;
+            var style = child.style;
+            style.filter = "progid:DXImageTransform.Microsoft." +
+                "AlphaImageLoader(src='" + img + "')";
+        } else {
+            el.src = img;
+        }
+        return el;
+    };
+
+    util.createImage = function (img, width, height) {
+        img = wmd.basePath + img;
+        if (nav.userAgent.indexOf("MSIE") != -1) {
+            var el = util.makeElement("span");
+            var style = el.style;
+            style.display = "inline-block";
+            style.height = "1px";
+            style.width = "1px";
+            el.unselectable = "on";
+            var span = util.makeElement("span");
+            style = span.style;
+            style.display = "inline-block";
+            style.height = "1px";
+            style.width = "1px";
+            style.filter = "progid:DXImageTransform.Microsoft." +
+                "AlphaImageLoader(src='" + img + "')";
+            span.unselectable = "on";
+            el.appendChild(span);
+        } else {
+            var el = util.makeElement("img");
+            el.style.display = "inline";
+            el.src = img;
+        }
+        el.style.border = "none";
+        el.border = "0";
+        if (width && height) {
+            el.style.width = width + "px";
+            el.style.height = height + "px";
+        }
+        return el;
+    };
+
+    util.prompt = function (text, defval, callback) {
+        var style;
+        var frame, background, input;
+
+        var checkEscape = function (key) {
+            var code = (key.charCode || key.keyCode);
+            if (code == 27) {
+                close(true);
+            }
+        };
+
+        var close = function (isCancel) {
+            util.removeEvent(doc.body, "keydown", checkEscape);
+            var text = input.value;
+            if (isCancel) {
+                text = null;
+            }
+            frame.parentNode.removeChild(frame);
+            background.parentNode.removeChild(background);
+            callback(text);
+            return false;
+        };
+
+        if (defval == undefined) {
+            defval = "";
+        }
+
+        var showBackground = function () {
+            background = util.makeElement("div");
+            style = background.style;
+            doc.body.appendChild(background);
+            style.position = "absolute";
+            style.top = "0";
+            style.left = "0";
+            style.backgroundColor = "#000";
+            style.zIndex = "1000";
+            var isKonq = /konqueror/.test(nav.userAgent.toLowerCase());
+            if (isKonq) {
+                style.backgroundColor="transparent";
+            } else {
+                style.opacity = "0.5";
+                style.filter = "alpha(opacity=50)";
+            }
+            var pageSize = position.getPageSize();
+            style.width = "100%";
+            style.height = pageSize[1] + "px";
+        };
+
+        var makeForm = function () {
+            frame = doc.createElement("div");
+            style = frame.style;
+            style.border = "3px solid #333";
+            style.backgroundColor = "#ccc";
+            style.padding = "10px;";
+            style.borderTop = "3px solid white";
+            style.borderLeft = "3px solid white";
+            style.position = "fixed";
+            style.width = "400px";
+            style.zIndex = "1001";
+
+            var question = util.makeElement("div");
+            style = question.style;
+            style.fontSize = "14px";
+            style.fontFamily = "Helvetica, Arial, Verdana, sans-serif";
+            style.padding = "5px";
+            question.innerHTML = text;
+            frame.appendChild(question);
+
+            var form = util.makeElement("form");
+            form.onsubmit = function () {
+                return close();
+            };
+            style = form.style;
+            style.padding = "0";
+            style.margin = "0";
+            style.cssFloat = "left";
+            style.width = "100%";
+            style.textAlign = "center";
+            style.position = "relative";
+            frame.appendChild(form);
+
+            input = doc.createElement("input");
+            input.value = defval;
+            style = input.style;
+            style.display = "block";
+            style.width = "80%";
+            style.marginLeft = style.marginRight = "auto";
+            style.backgroundColor = "white";
+            style.color = "black";
+            form.appendChild(input);
+
+            var okButton = doc.createElement("input");
+            okButton.type = "button";
+            okButton.onclick = function () {
+                return close();
+            };
+            okButton.value = "OK";
+            style = okButton.style;
+            style.margin = "10px";
+            style.display = "inline";
+            style.width = "7em";
+
+            var cancelButton = doc.createElement("input");
+            cancelButton.type = "button";
+            cancelButton.onclick = function () {
+                return close(true);
+            };
+            cancelButton.value = "Cancel";
+            style = cancelButton.style;
+            style.margin = "10px";
+            style.display = "inline";
+            style.width = "7em";
+            if (/mac/.test(nav.platform.toLowerCase())) {
+                form.appendChild(cancelButton);
+                form.appendChild(okButton);
+            } else {
+                form.appendChild(okButton);
+                form.appendChild(cancelButton);
+            }
+
+            util.addEvent(doc.body, "keydown", checkEscape);
+            style = frame.style;
+            style.top = "50%";
+            style.left = "50%";
+            style.display = "block";
+            if (wmd.Util.oldIE) {
+                style.position = "absolute";
+                style.top = doc.documentElement.scrollTop + 200 + "px";
+                style.left = "50%";
+            }
+            doc.body.appendChild(frame);
+            style.marginTop = -(position.getHeight(frame) / 2) + "px";
+            style.marginLeft = -(position.getWidth(frame) / 2) + "px";
+        };
+
+        showBackground();
+        self.setTimeout(function () {
+            makeForm();
+            var deflen = defval.length;
+            if (input.selectionStart != undefined) {
+                input.selectionStart = 0;
+                input.selectionEnd = deflen;
+            } else if (input.createTextRange) {
+                var range = input.createTextRange();
+                range.collapse(false);
+                range.moveStart("character", -deflen);
+                range.moveEnd("character", deflen);
+                range.select();
+            }
+            input.focus();
+        }, 0);
+    };
+
+    util.objectsEqual = function(lhs, rhs) {
+        for (var key in lhs) {
+            if (lhs[key] != rhs[key]) {
+                return false;
+            }
+        }
+        for (key in rhs) {
+            if (lhs[key] != rhs[key]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    util.cloneObject = function (obj) {
+        var result = {};
+        for (var key in obj) {
+            result[key] = obj[key];
+        }
+        return result;
+    };
+
+    util.escapeUnderscores = function (str) {
+        return str.replace(/(\S)(_+)(\S)/g, function (_, m1, m2, m3) {
+            return m1 + m2.replace(/_/g, "&#95;") + m3;
+        });
+    };
+
+    position.getPageSize = function () {
+        var scrollWidth, scrollHeight;
+        var maxWidth, maxHeight;
+        if (self.innerHeight && self.scrollMaxY) {
+            scrollWidth = doc.body.scrollWidth;
+            scrollHeight = self.innerHeight + self.scrollMaxY;
+        } else if (doc.body.scrollHeight > doc.body.offsetHeight) {
+            scrollWidth = doc.body.scrollWidth;
+            scrollHeight = doc.body.scrollHeight;
+        } else {
+            scrollWidth = doc.body.offsetWidth;
+            scrollHeight = doc.body.offsetHeight;
+        }
+
+        var innerWidth, innerHeight;
+        if (self.innerHeight) {
+            innerWidth = self.innerWidth;
+            innerHeight = self.innerHeight;
+        } else if (doc.documentElement && doc.documentElement.clientHeight) {
+            innerWidth = doc.documentElement.clientWidth;
+            innerHeight = doc.documentElement.clientHeight;
+        } else if (doc.body) {
+            innerWidth = doc.body.clientWidth;
+            innerHeight = doc.body.clientHeight;
+        }
+
+        maxWidth = Math.max(scrollWidth, innerWidth);
+        maxHeight = Math.max(scrollHeight, innerHeight);
+        return [maxWidth, maxHeight, innerWidth, innerHeight];
+    };
+
+    position.getPixelVal = function (val) {
+        if (val && /^(-?\d+(\.\d*)?)px$/.test(val)) {
+            return RE.$1;
+        }
+        return undefined;
+    };
+
+    position.getTop = function (el, isInner) {
+        var result = el.offsetTop;
+        if (!isInner) {
+            while (el = el.offsetParent) {
+                result += el.offsetTop;
+            }
+        }
+        return result;
+    };
+
+    position.setTop = function (el, newTop, isInner) {
+        var curTop = position.getPixelVal(el.style.top);
+        if (curTop == undefined) {
+            el.style.top = newTop + "px";
+            curTop = newTop;
+        }
+        var offset = position.getTop(el, isInner) - curTop;
+        el.style.top = (newTop - offset) + "px";
+    };
+
+    position.getLeft = function (el, isInner) {
+        var result = el.offsetLeft;
+        if (!isInner) {
+            while (el = el.offsetParent) {
+                result += el.offsetLeft;
+            }
+        }
+        return result;
+    };
+
 _7.setLeft=function(_77,_78,_79){
 var _7a=_7.getPixelVal(_77.style.left);
 if(_7a==undefined){
